@@ -211,10 +211,13 @@ def index():
         <style>
             body { font-family: Arial, sans-serif; margin: 30px; }
             table.dataTable thead th { font-weight: bold; }
+            .btn-history { display:inline-block; margin-bottom:20px; padding:8px 16px; background:#00abff; color:#fff; border:none; border-radius:4px; text-decoration:none;}
+            .btn-history:hover { background:#0056b3; }
         </style>
     </head>
     <body>
     <h2>Top Chatroom Indodax</h2>
+    <a href="/history" class="btn-history">Chat Terkini</a>
     <table id="ranking" class="display" style="width:100%">
         <thead>
         <tr>
@@ -222,7 +225,7 @@ def index():
             <th width="10%">Username</th>
             <th width="1%">Total</th>
             <th style="text-align: center;" width="50%">Terakhir Chat</th>
-            <th width="21%">Waktu Chat</th>
+            <th width="15%">Waktu Chat</th>
         </tr>
         </thead>
         <tbody>
@@ -271,6 +274,83 @@ def index():
     """
     return render_template_string(html)
 
+@app.route("/history")
+def history_page():
+    html = """
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>History Chat Indodax</title>
+        <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css"/>
+        <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+        <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+        <style>
+            body { font-family: Arial, sans-serif; margin: 30px; }
+            table.dataTable thead th { font-weight: bold; }
+            .btn-back { display:inline-block; margin-bottom:20px; padding:8px 16px; background:#6c757d; color:#fff; border:none; border-radius:4px; text-decoration:none;}
+            .btn-back:hover { background:#343a40; }
+            .header-chatroom {
+                display: flex;
+                align-items: center;
+                justify-content: flex-start; /* elemen mulai dari kiri */
+                gap: 20px; /* jarak antar elemen */
+            }
+            .header-chatroom a {color: red;}
+        </style>
+    </head>
+    <body>
+    <div class="header-chatroom">
+        <h2>History Chatroom Indodax</h2>
+        <a>* Maksimal 1000 chat terakhir</a>
+    </div>
+    <table id="history" class="display" style="width:100%">
+        <thead>
+            <tr>
+                <th width="15%">Waktu</th>
+                <th width="10%">Username</th>
+                <th width="70%">Chat</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+    <script>
+        var tableHistory = $('#history').DataTable({
+            "order": [[0, "desc"]],
+            "paging": false,
+            "info": false,
+            "searching": true,
+            "language": {
+                "emptyTable": "Belum ada history chat"
+            }
+        });
+
+        function loadHistory() {
+            $.getJSON("/history_data", function(data) {
+                tableHistory.clear();
+                if (data.history.length === 0) {
+                    tableHistory.draw();
+                    return;
+                }
+                for (var i = 0; i < data.history.length; i++) {
+                    var chat = data.history[i];
+                    tableHistory.row.add([
+                        chat.timestamp_wib || "",
+                        chat.username || "",
+                        chat.content || ""
+                    ]);
+                }
+                tableHistory.draw();
+            });
+        }
+
+        loadHistory();
+        setInterval(loadHistory, 1000); // refresh setiap 1 detik
+    </script>
+    </body>
+    </html>
+    """
+    return render_template_string(html)
+
 @app.route("/data")
 def data():
     ranking, error, t_awal, t_akhir, usernames = get_ranking()
@@ -289,6 +369,20 @@ def data():
         "t_awal": t_awal,
         "t_akhir": t_akhir
     })
+
+@app.route("/history_data")
+def history_data():
+    chats = []
+    try:
+        with open("chat_indodax.jsonl", "r", encoding="utf-8") as f:
+            lines = f.readlines()[-1000:]  # Ambil 100 baris terakhir
+            for line in lines:
+                chat = json.loads(line)
+                chats.append(chat)
+    except Exception as e:
+        return jsonify({"error": str(e), "history": []})
+    chats = sorted(chats, key=lambda x: x["timestamp"], reverse=True)
+    return jsonify({"history": chats})
 
 def run_flask():
     port = int(os.environ.get("PORT", 8080))
