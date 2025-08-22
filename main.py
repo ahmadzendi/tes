@@ -220,9 +220,9 @@ def index():
         <tr>
             <th width="1%">Nomor</th>
             <th width="10%">Username</th>
-            <th width="1%">Jumlah Chat</th>
-            <th width="50%">Terakhir Chat</th>
-            <th width="13%">Waktu Chat</th>
+            <th width="1%">Jumlah</th>
+            <th style="text-align: center;" width="50%">Terakhir Chat</th>
+            <th width="15%">Waktu Chat</th>
         </tr>
         </thead>
         <tbody>
