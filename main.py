@@ -218,11 +218,11 @@ def index():
     <table id="ranking" class="display" style="width:100%">
         <thead>
         <tr>
-            <th>Nomor</th>
-            <th>Username</th>
-            <th>Jumlah Chat</th>
-            <th>Terakhir Chat</th>
-            <th>Waktu Chat</th>
+            <th width="1%">Nomor</th>
+            <th width="10%">Username</th>
+            <th width="1%">Jumlah Chat</th>
+            <th width="50%">Terakhir Chat</th>
+            <th width="13%">Waktu Chat</th>
         </tr>
         </thead>
         <tbody>
