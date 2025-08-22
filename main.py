@@ -306,7 +306,7 @@ def history_page():
     <table id="history" class="display" style="width:100%">
         <thead>
             <tr>
-                <th width="15%">Waktu</th>
+                <th width="19%">Waktu</th>
                 <th width="10%">Username</th>
                 <th width="70%">Chat</th>
             </tr>
