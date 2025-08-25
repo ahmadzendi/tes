@@ -8,7 +8,6 @@ from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
 from flask import Flask, render_template_string, jsonify
 from datetime import datetime, timezone, timedelta
 
-# --- Konfigurasi ---
 WIB = timezone(timedelta(hours=7))
 url = "https://indodax.com/api/v2/chatroom/history"
 jsonl_file = "chat_indodax.jsonl"
